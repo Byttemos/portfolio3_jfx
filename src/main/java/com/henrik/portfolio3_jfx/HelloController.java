@@ -8,7 +8,10 @@ import javafx.scene.control.MenuItem;
 import java.sql.SQLException;
 
 public class HelloController {
-    String url = "jdbc:sqlite:C:\\Users\\Henrik Riskær\\IdeaProjects\\Portfolio_3\\data.db";
+    String url = "jdbc:sqlite:C:\\Users\\Henrik Riskær\\IdeaProjects\\Portfolio3_jfx\\data.db";
+    @FXML
+    Label outputlabel = new Label();
+
     @FXML
     public void pickAisha() throws ClassNotFoundException {
         studentQuery("1");
@@ -69,8 +72,10 @@ public class HelloController {
             System.out.println("Attempting database connection...");
             DataConnection DC = new DataConnection(this.url);
             System.out.println("Database connection successful!");
-            DC.pickStudent(id);
+           // DC.pickStudent(id);
+            outputlabel.setText(DC.pickStudent(id) + " Average: " + DC.getStudentAvg(id));
             DC.close();
+
         } catch (
                 SQLException e) {
             e.printStackTrace();
@@ -82,7 +87,7 @@ public class HelloController {
             System.out.println("Attempting database connection...");
             DataConnection DC = new DataConnection(this.url);
             System.out.println("Database connection successful!");
-            DC.pickCourse(id);
+            outputlabel.setText(DC.pickCourse(id));
             DC.close();
         } catch (
                 SQLException e) {

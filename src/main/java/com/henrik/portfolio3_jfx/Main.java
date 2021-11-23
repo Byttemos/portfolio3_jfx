@@ -18,8 +18,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("hello-view.fxml")));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.setTitle("Bootleg STADS");
+        primaryStage.setScene(new Scene(root, 300, 400));
         primaryStage.show();
     }
     public static void main(String[] args) throws ClassNotFoundException{

@@ -1,7 +1,7 @@
 package com.henrik.portfolio3_jfx;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.lang.*;
+//import java.lang.*;
 
 import javafx.collections.ObservableList;
 import org.sqlite.JDBC;
@@ -35,7 +35,7 @@ public class DataConnection {
         }
     }
 
-    public void pickCourse(String course_id){
+    public String pickCourse(String course_id){
         try{
             String sql = "SELECT Courses.CourseName, Courses.CourseYear, Courses.CourseSemester" +
                 ", AVG(Registrations.Grade) AS Grade " +
@@ -43,28 +43,50 @@ public class DataConnection {
                 "WHERE Courses.ID=" + course_id;
             Statement stmt = this.conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
+            String course = "";
             while(rs.next()){
-                System.out.println("Course name: " + rs.getString("CourseName") + " " + rs.getString("CourseSemester") +
-                                   " " + rs.getString("CourseYear"));
-                System.out.println("Grade average: " + rs.getString("Grade"));
+                course = "Course name: " + rs.getString("CourseName") + " " + rs.getString("CourseSemester") +
+                                   " " + rs.getString("CourseYear") + "\n" +
+                "Grade average: " + rs.getString("Grade");
             }
+            return course;
         } catch(SQLException e){
             e.printStackTrace();
+            return null;
         }
     }
 
-    public void pickStudent(String student_id){
-        String sql = "SELECT s.name, c.CourseName, c.CourseYear, c.CourseSemester, AVG(r.Grade) as avg " +
+    public String getStudentAvg(String student_id){
+        String sql = "SELECT AVG(r.Grade) as Average FROM Registrations r WHERE StudentID=" + student_id;
+        try {
+            ResultSet rs = this.query(sql).get();
+            String student_avg = rs.getString(1);
+            return student_avg;
+        }catch(SQLException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    public String pickStudent(String student_id){
+        String sql = "SELECT s.name, c.CourseName, c.CourseYear, c.CourseSemester, r.Grade " +
             "FROM Students s LEFT JOIN Registrations r ON r.StudentID=s.ID " +
             "LEFT JOIN Courses c ON c.ID=r.CourseID " +
             "WHERE s.ID=" + student_id;
+
         try {
             ResultSet rs = this.query(sql).get();
-            this.printResult(rs);
+
+            String out = this.printResult(rs);
+
+           // System.out.println("test: " + test);
+            return(out);
+
         } catch(Exception e) {
             e.printStackTrace();
             System.out.println("SQL error");
-        }
+        }return null;
     }
 
 
@@ -79,20 +101,33 @@ public class DataConnection {
         }
     }
 
-    private void printResult(ResultSet rs) {
+    private String printResult(ResultSet rs) {
         try {
             ResultSetMetaData rsmeta = rs.getMetaData();
             int columnCount = rsmeta.getColumnCount();
+            System.out.println(columnCount);
+            String[] diller;
+            diller = new String[columnCount];
+            String bob = "";
             while(rs.next()){
                 for (int i = 1; i <= columnCount; i++) {
+
                     String colVal = rs.getString(i);
-                    System.out.print(colVal + " " + rsmeta.getColumnName(i));
+                    System.out.println(colVal);
+                    diller[i-1] = rsmeta.getColumnName(i) + ": " + colVal;
+
                 }
+            bob += String.join("\n" ,diller);
+
             }
-            System.out.println("");
+
+            return bob;
+
         }catch(SQLException e){
             e.printStackTrace();
+
         }
+        return null;
     }
 
 }
